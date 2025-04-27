@@ -7,6 +7,7 @@ export default defineConfig({
   base: '/content-remixer/',
   build: {
     outDir: 'dist',
+    assetsDir: 'assets',
     sourcemap: true
   }
 
