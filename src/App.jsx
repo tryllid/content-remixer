@@ -5,15 +5,40 @@ function App() {
   const [inputText, setInputText] = useState('')
   const [outputText, setOutputText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
 
   const handleRemix = async () => {
     setIsLoading(true)
+    setError('')
     try {
-      // TODO: Add API call here
-      // For now, just echo the input
-      setOutputText(inputText)
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': process.env.VITE_CLAUDE_API_KEY,
+          'anthropic-version': '2023-06-01'
+        },
+        body: JSON.stringify({
+          model: 'claude-3-opus-20240229',
+          max_tokens: 1000,
+          messages: [
+            {
+              role: 'user',
+              content: `Please remix this content in a creative way while maintaining its core message: ${inputText}`
+            }
+          ]
+        })
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to remix content')
+      }
+
+      const data = await response.json()
+      setOutputText(data.content[0].text)
     } catch (error) {
       console.error('Error:', error)
+      setError('Failed to remix content. Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -45,6 +70,12 @@ function App() {
           >
             {isLoading ? 'Remixing...' : 'Remix Content'}
           </button>
+
+          {error && (
+            <div className="text-red-500 text-center">
+              {error}
+            </div>
+          )}
 
           <div>
             <label htmlFor="output" className="block text-sm font-medium text-gray-700 mb-2">
