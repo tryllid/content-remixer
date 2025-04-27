@@ -11,6 +11,7 @@ body {
 /* Utility classes */
 .min-h-screen {
   min-height: 100vh;
+  background-color: #6495ED;
 }
 
 .max-w-4xl {
